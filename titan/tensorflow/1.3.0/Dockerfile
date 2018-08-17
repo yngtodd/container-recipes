@@ -10,8 +10,7 @@ RUN apt update && \
     apt update && \
     apt install -y mpich && \
     apt install -y build-essential wget curl pkg-config libtool autoconf g++ zip zlib1g-dev unzip git && \
-    apt install -y python-numpy python-scipy python-dev python-pip python-setuptools && \
-    apt install -y python3-numpy python3-scipy python3-dev python3-pip python3-setuptools && \
+    apt install -y python3-numpy python3-scipy python3-dev python3-mpi4py python3-pip python3-setuptools && \
     rm -rf /var/lib/apt/lists/*
 
 RUN wget http://ftp.osuosl.org/pub/funtoo/distfiles/oracle-java/jdk-8u152-linux-x64.tar.gz && \
@@ -36,43 +35,6 @@ RUN cd / && \
     cd output && \
     cp /bazel/output/bazel /usr/local/bin && \
     rm -rf /bazel-0.4.5-dist.zip
-
-RUN export PYTHON_BIN_PATH=`which python` && \
-    export PYTHON_LIB_PATH=/usr/lib/python2.7/dist-packages && \
-    export TF_NEED_MKL=0 && \
-    export CC_OPT_FLAGS="-march=native" && \
-    export TF_NEED_JEMALLOC=1 && \
-    export TF_NEED_GCP=0 && \
-    export TF_NEED_HDFS=0 && \
-    export TF_ENABLE_XLA=0 && \
-    export TF_NEED_OPENCL=0 && \
-    export TF_NEED_CUDA=1 && \
-    export TF_CUDA_CLANG=0 && \
-    export TF_CUDA_VERSION="7.5" && \
-    export CUDA_TOOLKIT_PATH="/usr/local/cuda" && \
-    export TF_CUDNN_VERSION="6" && \
-    export CUDNN_INSTALL_PATH=$CUDA_TOOLKIT_PATH && \
-    export TF_CUDA_COMPUTE_CAPABILITIES="3.5" && \
-    export TF_NEED_VERBS=0 && \
-    export TF_NEED_S3=0 && \
-    export TF_NEED_GDR=0 && \
-    export TF_NEED_OPENCL_SYCL=0 && \
-    export GCC_HOST_COMPILER_PATH=/usr/bin/gcc-4.9 && \
-    export TF_NEED_MPI=0 && \
-    export LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs:$LD_LIBRARY_PATH && \
-    ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/libcuda.so.1 && \
-    cd / && \
-    wget https://github.com/tensorflow/tensorflow/archive/v1.3.1.tar.gz && \
-    tar xf v1.3.1.tar.gz && \
-    cd tensorflow-1.3.1 && \
-    ./configure && \
-    bazel build --local_resources 2048,2.0,1.0 -c opt --copt=-mavx --copt=-msse4.1 --copt=-msse4.2 --config=cuda tensorflow/tools/pip_package:build_pip_package && \
-    bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg && \
-    pip2 install /tmp/tensorflow_pkg/tensorflow-*.whl && \
-    cd / && \
-    rm -rf /v1.3.1.tar.gz && \
-    rm -rf /tensorflow-1.3.1 && \
-    rm -rf /tmp/tensorflow_pkg
 
 RUN export PYTHON_BIN_PATH=`which python3` && \
     export PYTHON_LIB_PATH=/usr/lib/python3/dist-packages && \
@@ -109,6 +71,16 @@ RUN export PYTHON_BIN_PATH=`which python3` && \
     rm -rf /v1.3.1.tar.gz && \
     rm -rf /tensorflow-1.3.1 && \
     rm -rf /tmp/tensorflow_pkg
+
+RUN cd \
+    git clone https://github.com/scikit-optimize/scikit-optimize.git \
+    cd scikit-optimize \ 
+    pip3 install . \ 
+    cd \
+    git clone https://github.com/yngtodd/hyperspace.git \ 
+    cd hyperspace \ 
+    pip3 install . \ 
+    cd \
 
 # Make sure bazel is shutdown so it doesn't stop singularity from cleanly exiting
 RUN bazel shutdown && \
