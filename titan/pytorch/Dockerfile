@@ -18,4 +18,4 @@ RUN wget http://developer.download.nvidia.com/compute/redist/cudnn/v7.2/cudnn-9.
     tar xvzf cudnn-9.1-linux-x64-v7.2.tgz && \
     cp -P cuda/include/cudnn.h /usr/local/cuda/include && \
     cp -P cuda/lib64/libcudnn* /usr/local/cuda/lib64 && \
-    chmod a+r /usr/local/cuda/include/cudnn.h /usr/local/cuda/lib64/libcudnn* && \
+    chmod a+r /usr/local/cuda/include/cudnn.h/usr/local/cuda/lib64/libcudnn* && \
